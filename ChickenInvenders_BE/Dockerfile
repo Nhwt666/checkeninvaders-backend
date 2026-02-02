@@ -18,8 +18,6 @@ COPY --from=build /app/publish .
 # Expose port 10000 (Render requirement)
 EXPOSE 10000
 
-# Set environment variable for port
-ENV ASPNETCORE_URLS=http://+:10000
 
 # Run the application
 ENTRYPOINT ["dotnet", "ChickenInvenders_BE.dll"]
