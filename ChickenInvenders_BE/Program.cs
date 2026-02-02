@@ -107,4 +107,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Configure port for Render
+var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
+app.Urls.Add($"http://0.0.0.0:{port}");
+
 app.Run();
