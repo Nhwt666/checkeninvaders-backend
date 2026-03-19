@@ -84,8 +84,21 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// Simple admin page served as static file at /admin -> /admin.html
+app.MapGet("/admin", async context =>
+{
+    context.Response.Redirect("/admin.html");
+});
+
+// Public leaderboard page at /leaderboard -> /leaderboard.html
+app.MapGet("/leaderboard", async context =>
+{
+    context.Response.Redirect("/leaderboard.html");
+});
 
 app.Run();

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Chicken Invenders - Admin Config</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(134, 239, 172, 0.45), transparent 30%),
+        radial-gradient(circle at 90% 10%, rgba(103, 232, 249, 0.38), transparent 30%),
+        radial-gradient(circle at 50% 100%, rgba(74, 222, 128, 0.25), transparent 40%),
+        linear-gradient(160deg, #0f3d2e, #0b4a3f 45%, #083344);
+      color: #ecfeff;
+    }
+    .page {
+      max-width: 960px;
+      margin: 24px auto;
+      padding: 24px;
+      background: rgba(7, 40, 34, 0.82);
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(134, 239, 172, 0.35);
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 26px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    h2 {
+      font-size: 18px;
+      margin-top: 24px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+      padding-bottom: 4px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px 24px;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    label {
+      font-size: 13px;
+      color: #bbf7d0;
+    }
+    input[type="number"],
+    input[type="text"],
+    input[type="password"] {
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(110, 231, 183, 0.6);
+      background: rgba(2, 44, 34, 0.85);
+      color: #ecfeff;
+      font-size: 14px;
+    }
+    input:focus {
+      outline: none;
+      border-color: #86efac;
+      box-shadow: 0 0 0 1px rgba(134, 239, 172, 0.45);
+    }
+    .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 8px;
+    }
+    button {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-primary {
+      background: linear-gradient(to right, #22c55e, #16a34a);
+      color: white;
+    }
+    .btn-secondary {
+      background: rgba(4, 71, 59, 0.75);
+      border: 1px solid rgba(110, 231, 183, 0.65);
+      color: #ecfeff;
+    }
+    .btn-danger {
+      background: linear-gradient(to right, #f97316, #ea580c);
+      color: white;
+    }
+    .status {
+      margin-top: 8px;
+      font-size: 13px;
+    }
+    .status.ok {
+      color: #86efac;
+    }
+    .status.err {
+      color: #fca5a5;
+    }
+    .section {
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      background: rgba(6, 52, 43, 0.75);
+      border: 1px solid rgba(74, 222, 128, 0.28);
+    }
+    small {
+      font-size: 11px;
+      color: #a7f3d0;
+    }
+    @media (max-width: 600px) {
+      .page {
+        margin: 12px;
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>🐔 Chicken Invenders - Admin Config</h1>
+    <p><small>Trang này dùng để chỉnh nhanh các thông số balance của game (enemy, boss, player) thông qua API backend hiện tại.</small></p>
+
+    <!-- LOGIN -->
+    <div class="section">
+      <h2>1. Đăng nhập (lấy JWT)</h2>
+      <div class="grid">
+        <div class="field">
+          <label for="login-username">Username</label>
+          <input id="login-username" type="text" placeholder="admin" />
+        </div>
+        <div class="field">
+          <label for="login-password">Password</label>
+          <input id="login-password" type="password" placeholder="••••••" />
+        </div>
+      </div>
+      <div class="row">
+        <button class="btn-primary" id="btn-login">Đăng nhập &amp; lưu token</button>
+        <button class="btn-secondary" id="btn-clear-token">Xóa token</button>
+        <small id="login-status" class="status"></small>
+      </div>
+      <small>Token sẽ chỉ lưu trong bộ nhớ trình duyệt (session) – reload trang sẽ mất.</small>
+    </div>
+
+    <!-- GLOBAL -->
+    <div class="section">
+      <h2>2. Game balance tổng</h2>
+      <div class="row">
+        <button class="btn-secondary" id="btn-load-balance">Load từ API /api/Config/game-balance</button>
+        <small id="balance-status" class="status"></small>
+      </div>
+    </div>
+
+    <!-- ENEMY / BOSS -->
+    <div class="section">
+      <h2>3. Enemy &amp; Boss</h2>
+      <div class="grid">
+        <div class="field">
+          <label for="enemy-health">Enemy Health</label>
+          <input id="enemy-health" type="number" step="1" />
+        </div>
+        <div class="field">
+          <label for="enemy-damage">Enemy Damage / Bullet Damage</label>
+          <input id="enemy-damage" type="number" step="1" />
+        </div>
+        <div class="field">
+          <label for="boss-health">Boss Health</label>
+          <input id="boss-health" type="number" step="1" />
+        </div>
+      </div>
+      <div class="row">
+        <button class="btn-primary" id="btn-save-enemies">Lưu Enemy + Boss</button>
+        <small id="enemy-status" class="status"></small>
+      </div>
+      <small>Enemy thường và boss dùng cùng damage per bullet theo thiết kế hiện tại.</small>
+    </div>
+
+    <!-- PLAYER -->
+    <div class="section">
+      <h2>4. Player (Máy bay)</h2>
+      <div class="grid">
+        <div class="field">
+          <label for="player-speed">Tốc độ máy bay (playerSpeed)</label>
+          <input id="player-speed" type="number" step="0.5" />
+        </div>
+        <div class="field">
+          <label for="shield-time">Thời gian khiên (shieldTimeSeconds)</label>
+          <input id="shield-time" type="number" step="0.5" />
+        </div>
+        <div class="field">
+          <label for="coin-reward">Điểm mỗi đùi gà (scorePerChickenLeg)</label>
+          <input id="coin-reward" type="number" step="1" />
+        </div>
+        <div class="field">
+          <label for="bullet-level">Cấp đạn mặc định (defaultBulletLevel)</label>
+          <input id="bullet-level" type="number" step="1" min="0" />
+        </div>
+        <div class="field">
+          <label for="player-lives">Số mạng (lives)</label>
+          <input id="player-lives" type="number" step="1" min="1" />
+        </div>
+      </div>
+      <div class="row">
+        <button class="btn-primary" id="btn-save-player">Lưu PlayerConfig</button>
+        <small id="player-status" class="status"></small>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const apiBase = ""; // same origin
+    let jwtToken = null;
+
+    function setStatus(el, msg, ok) {
+      el.textContent = msg;
+      el.classList.remove("ok", "err");
+      if (!msg) return;
+      el.classList.add(ok ? "ok" : "err");
+    }
+
+    async function apiFetch(path, options = {}) {
+      const url = apiBase + path;
+      const headers = Object.assign(
+        { "Content-Type": "application/json" },
+        options.headers || {}
+      );
+      if (jwtToken) {
+        headers["Authorization"] = "Bearer " + jwtToken;
+      }
+      const res = await fetch(url, { ...options, headers });
+      let body = null;
+      try {
+        body = await res.json();
+      } catch {
+        // ignore parse error for empty bodies
+      }
+      if (!res.ok) {
+        const msg = body && body.message ? body.message : res.status + " " + res.statusText;
+        throw new Error(msg);
+      }
+      return body;
+    }
+
+    // LOGIN
+    document.getElementById("btn-login").addEventListener("click", async () => {
+      const u = document.getElementById("login-username").value.trim();
+      const p = document.getElementById("login-password").value;
+      const status = document.getElementById("login-status");
+      setStatus(status, "Đang đăng nhập...", true);
+      try {
+        const body = await apiFetch("/api/Auth/login", {
+          method: "POST",
+          body: JSON.stringify({ username: u, password: p }),
+        });
+        jwtToken = body.token;
+        setStatus(status, "Đăng nhập thành công.", true);
+      } catch (err) {
+        setStatus(status, "Đăng nhập thất bại: " + err.message, false);
+      }
+    });
+
+    document.getElementById("btn-clear-token").addEventListener("click", () => {
+      jwtToken = null;
+      setStatus(document.getElementById("login-status"), "Đã xóa token trong bộ nhớ.", true);
+    });
+
+    // LOAD GAME BALANCE
+    document.getElementById("btn-load-balance").addEventListener("click", async () => {
+      const status = document.getElementById("balance-status");
+      setStatus(status, "Đang load config...", true);
+      try {
+        const dto = await apiFetch("/api/Config/game-balance");
+
+        // Enemy / Boss
+        document.getElementById("enemy-health").value = dto.enemyHealth;
+        document.getElementById("enemy-damage").value = dto.enemyDamage;
+        document.getElementById("boss-health").value = dto.bossHealth;
+
+        // Player
+        document.getElementById("player-speed").value = dto.playerSpeed ?? "";
+        document.getElementById("shield-time").value = dto.shieldTimeSeconds ?? "";
+        document.getElementById("coin-reward").value = dto.coinReward ?? "";
+        document.getElementById("bullet-level").value = dto.defaultBulletLevel ?? "";
+        document.getElementById("player-lives").value = dto.lives ?? "";
+
+        setStatus(status, "Đã load game-balance.", true);
+      } catch (err) {
+        setStatus(status, "Lỗi load: " + err.message, false);
+      }
+    });
+
+    // SAVE ENEMY + BOSS
+    document.getElementById("btn-save-enemies").addEventListener("click", async () => {
+      const status = document.getElementById("enemy-status");
+      setStatus(status, "Đang lưu Enemy/Boss...", true);
+      const enemyHealth = parseInt(document.getElementById("enemy-health").value || "0", 10);
+      const enemyDamage = parseInt(document.getElementById("enemy-damage").value || "0", 10);
+      const bossHealth = parseInt(document.getElementById("boss-health").value || "0", 10);
+
+      const enemyDto = {
+        name: "Chicken",
+        maxHealth: enemyHealth,
+        scoreOnKill: 100,
+        damagePerBullet: enemyDamage,
+        eggSpawnIntervalMinSeconds: 1,
+        eggSpawnIntervalMaxSeconds: 3,
+        isBoss: false,
+      };
+
+      const bossDto = {
+        name: "Boss",
+        maxHealth: bossHealth,
+        scoreOnKill: 10000,
+        damagePerBullet: enemyDamage,
+        eggSpawnIntervalMinSeconds: 0,
+        eggSpawnIntervalMaxSeconds: 1,
+        isBoss: true,
+      };
+
+      try {
+        await apiFetch("/api/Config/enemies/Chicken", {
+          method: "PUT",
+          body: JSON.stringify(enemyDto),
+        });
+        await apiFetch("/api/Config/enemies/Boss", {
+          method: "PUT",
+          body: JSON.stringify(bossDto),
+        });
+
+        setStatus(status, "Đã lưu Enemy & Boss.", true);
+      } catch (err) {
+        setStatus(status, "Lỗi lưu: " + err.message, false);
+      }
+    });
+
+    // SAVE PLAYER CONFIG
+    document.getElementById("btn-save-player").addEventListener("click", async () => {
+      const status = document.getElementById("player-status");
+      setStatus(status, "Đang lưu PlayerConfig...", true);
+
+      const speed = parseFloat(document.getElementById("player-speed").value || "0");
+      const shieldTime = parseFloat(document.getElementById("shield-time").value || "0");
+      const coinReward = parseInt(document.getElementById("coin-reward").value || "0", 10);
+      const bulletLevel = parseInt(document.getElementById("bullet-level").value || "0", 10);
+      const lives = parseInt(document.getElementById("player-lives").value || "0", 10);
+
+      const dto = {
+        speed: speed,
+        shieldTimeSeconds: shieldTime,
+        scorePerChickenLeg: coinReward,
+        defaultBulletLevel: bulletLevel,
+        lives: lives,
+      };
+
+      try {
+        await apiFetch("/api/Config/player", {
+          method: "PUT",
+          body: JSON.stringify(dto),
+        });
+        setStatus(status, "Đã lưu PlayerConfig.", true);
+      } catch (err) {
+        setStatus(status, "Lỗi lưu: " + err.message, false);
+      }
+    });
+  </script>
+</body>
+</html>
+
